@@ -182,6 +182,12 @@ textarea.in{min-height:70px;resize:vertical}
 .empty{text-align:center;padding:28px 12px;opacity:.5;font-weight:600;font-size:14.5px;line-height:1.5}
 
 /* ---------- pin ---------- */
+.due{font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;white-space:nowrap;flex:0 0 auto}
+.late{background:#FBEEF0;color:#B4404F}
+.soon{background:#FFF3DC;color:#9A6A16}
+.later{background:#F1F3F8;color:#6B7590}
+.s-late{background:#FBEEF0;color:#B4404F}
+.step .mini{margin-left:4px}
 .pin{max-width:330px;margin:52px auto 0;text-align:center}
 .dots{display:flex;justify-content:center;gap:13px;margin:22px 0 6px}
 .dot{width:14px;height:14px;border-radius:50%;background:rgba(52,64,92,.16)}
@@ -398,6 +404,11 @@ const DEFAULT = {
         C("🛒","Je range les courses",10,true)]
      }}
   ],
+  parents:[
+    {id:"pa1",name:"Maman",avatar:"👩",theme:"lavande"},
+    {id:"pa2",name:"Papa",avatar:"👨",theme:"peche"}
+  ],
+  todos:[],
   rewards:[
     {id:"r1",icon:"🍫",label:"Dessert préféré",cost:25,active:true},
     {id:"r2",icon:"🎮",label:"30 min de jeu",cost:30,active:true},
@@ -517,6 +528,27 @@ function rollover(){
   }
   return false;
 }
+function parentById(id){ return S.parents.find(p=>p.id===id); }
+
+// Échéances : renvoie le libellé et la classe visuelle d'une date
+function dueInfo(d){
+  if(!d) return {txt:"Sans date",cls:"later",rank:3,off:99999};
+  const t=today();
+  const off=Math.round((new Date(d+"T12:00:00") - new Date(t+"T12:00:00"))/86400000);
+  if(off<0) return {txt:(off===-1?"Hier":Math.abs(off)+" jours de retard"),cls:"late",rank:0,off:off};
+  if(off===0) return {txt:"Aujourd'hui",cls:"late",rank:1,off:0};
+  if(off===1) return {txt:"Demain",cls:"soon",rank:1,off:1};
+  if(off<=7) return {txt:new Date(d+"T12:00:00").toLocaleDateString("fr-FR",{weekday:"long"}),cls:"soon",rank:2,off:off};
+  return {txt:new Date(d+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"short"}),cls:"later",rank:2,off:off};
+}
+function todosOf(id,done){ return S.todos.filter(t=>t.ownerId===id && !!t.done===!!done); }
+function openCount(id){ return todosOf(id,false).length; }
+function lateCount(id){ return todosOf(id,false).filter(t=>t.due && t.due<today()).length; }
+function sortTodos(a,b){
+  const A=dueInfo(a.due), B=dueInfo(b.due);
+  return A.off-B.off || a.at.localeCompare(b.at);
+}
+
 function childById(id){ return S.children.find(c=>c.id===id); }
 function balance(id){ return S.tx.filter(t=>t.childId===id).reduce((a,t)=>a+t.amount,0); }
 function slot(id,tab){ return id+":"+tab; }
@@ -734,10 +766,22 @@ function viewHome(){
       +'</span><span class="go" style="color:'+T2.deep+'">›</span></button>';
   }).join("");
 
+  const adults = S.parents.map(p=>{
+    const T2=th(p), n=openCount(p.id), l=lateCount(p.id);
+    return '<button class="kid" data-a="adult" data-pid="'+p.id+'" style="background:'+T2.tint+';padding:14px 18px">'
+      +'<span class="face" style="background:'+T2.soft+';width:52px;height:52px;flex:0 0 52px;border-radius:18px;font-size:26px">'+p.avatar+'</span>'
+      +'<span style="min-width:0"><span class="nm" style="color:'+T2.deep+';font-size:20px">'+esc(p.name)+'</span>'
+      +'<span class="chips">'+(n?'<span class="mini-chip">📋 '+n+' à faire</span>':'<span class="mini-chip s-ok">Rien en attente</span>')
+      +(l?'<span class="mini-chip s-late">⏰ '+l+' en retard</span>':"")+'</span></span>'
+      +'<span class="go" style="color:'+T2.deep+'">›</span></button>';
+  }).join("");
+
   return '<div class="shell"><div class="home-top">'
     +'<div class="dt">'+pretty()+'</div><h1>Qui es-tu ?</h1>'
     +'<p>Choisis ton prénom pour voir ta journée</p></div>'
     +'<div class="kids">'+cards+'</div>'
+    +'<div class="glabel" style="margin-top:26px">Les parents</div>'
+    +'<div class="kids">'+adults+'</div>'
     +'<button class="linkbtn" data-a="gate">Espace parents'+(pend?'<span class="badge-dot">'+pend+'</span>':"")+'</button>'
     +'</div>';
 }
@@ -805,6 +849,41 @@ function viewChild(){
       +(mine.length?mine.map(txHTML).join(""):'<p class="empty">Rien encore.</p>')+'</div>';
   }
   return '<div class="shell">'+head+body+'</div>'+modalHTML();
+}
+
+function viewAdult(){
+  const p = parentById(ui.pid) || S.parents[0], T2 = th(p);
+  const open = todosOf(p.id,false).slice().sort(sortTodos);
+  const done = todosOf(p.id,true).slice().reverse().slice(0,12);
+  const late = open.filter(t=>t.due && t.due<today()).length;
+
+  const row = (t,isDone)=>{
+    const d=dueInfo(t.due), from=t.by&&t.by!==p.id?parentById(t.by):null;
+    return '<div class="step'+(isDone?" done":"")+'" style="'+(isDone?"background:"+T2.tint+";":"")+'">'
+      +'<button class="box" data-a="todo-tog" data-id="'+t.id+'" aria-label="Terminer"'
+        +' style="background:'+(isDone?T2.acc:T2.tint)+';'+(isDone?"":"box-shadow:inset 0 0 0 2.5px "+T2.soft)+'">'+(isDone?checkSvg():"")+'</button>'
+      +'<span class="lb" style="flex:1;min-width:0">'+esc(t.label)
+        +(from&&!isDone?'<span class="hint2">ajoutée par '+esc(from.name)+'</span>':"")+'</span>'
+      +(isDone?"":'<span class="due '+d.cls+'">'+d.txt+'</span>')
+      +(isDone?"":'<button class="mini" data-a="todo-edit" data-id="'+t.id+'" aria-label="Modifier">✎</button>')
+      +'<button class="mini danger" data-a="todo-del" data-id="'+t.id+'" aria-label="Supprimer">✕</button></div>';
+  };
+
+  return '<div class="shell">'
+    +'<div class="topbar"><button class="pill" data-a="home" style="color:'+T2.deep+'">← Changer de profil</button>'
+    +'<button class="icon-btn grow" data-a="gate" aria-label="Espace parents">⚙</button></div>'
+    +'<div class="head"><span class="face" style="background:'+T2.soft+'">'+p.avatar+'</span>'
+    +'<div><h2 style="color:'+T2.deep+'">'+esc(p.name)+'</h2><div class="sub">'+pretty()+'</div></div></div>'
+    +'<div class="card" style="margin-top:18px"><div class="rowb">'
+      +'<span class="l" style="color:'+T2.deep+'">'+open.length+' tâche'+(open.length>1?"s":"")+' à faire</span>'
+      +'<span class="r">'+(late?late+" en retard":"rien en retard")+'</span></div></div>'
+    +'<button class="cta" style="background:'+T2.acc+';margin:0 0 18px" data-a="todo-new" data-pid="'+p.id+'">+ Ajouter une tâche</button>'
+    +(open.length?open.map(t=>row(t,false)).join("")
+      :'<p class="empty">Rien à faire pour l\'instant.<br>Ajoute une tâche, ou laisse '+esc((S.parents.find(x=>x.id!==p.id)||{}).name||"l\'autre parent")+' t\'en confier une.</p>')
+    +(done.length?'<div class="glabel" style="margin-top:26px;color:'+T2.deep+'">Terminées</div>'
+      +done.map(t=>row(t,true)).join("")
+      +'<button class="wide-btn" data-a="todo-clear" data-pid="'+p.id+'">Effacer les tâches terminées</button>':"")
+    +'</div>'+modalHTML();
 }
 
 function txHTML(t){
@@ -1007,6 +1086,15 @@ function pSet(){
     +'<label class="fld" style="max-width:170px"><span>Bonus par routine complète</span><input class="in" inputmode="numeric" data-f="settings.routineBonus" value="'+S.settings.routineBonus+'"></label>'
     +'<button class="wide-btn'+(S.settings.validateChores?" ok":"")+'" data-a="tog-valid">'
       +(S.settings.validateChores?"Validation parentale des tâches : activée ✅":"Validation parentale des tâches : désactivée")+'</button></div>'
+    +'<div class="sheet"><h4>Profils parents</h4>'
+    +'<p class="hint">Leurs listes de tâches n\'ont ni points, ni médailles, ni récompenses. Chacun peut ajouter une tâche à l\'autre.</p>'
+    +S.parents.map((p,i)=>'<div class="erow">'
+      +'<input class="ic" data-f="parents.'+i+'.avatar" value="'+esc(p.avatar)+'">'
+      +'<input class="tx2" data-f="parents.'+i+'.name" value="'+esc(p.name)+'">'
+      +'<select class="tx2" style="flex:0 0 140px;min-width:120px" data-a="pa-theme" data-i="'+i+'">'
+        +Object.keys(THEMES).map(k=>'<option value="'+k+'"'+(p.theme===k?" selected":"")+'>'+THEMES[k].label+'</option>').join("")
+      +'</select></div>').join("")
+    +'</div>'
     +'<div class="sheet"><h4>Codes</h4>'
     +'<p class="hint">Le code de la maison ouvre l\'appli, demandé une seule fois par appareil. Le code parents protège cet écran. Garde-les différents.</p>'
     +'<div class="duo">'
@@ -1046,6 +1134,23 @@ function modalHTML(){
       +'<p><b>'+m.medal.label+'</b><br>'+m.medal.desc+'</p>'
       +'<button class="cta" style="background:'+T2.acc+'" data-a="close">Super !</button></div></div>';
   }
+  if(m.kind==="todo"){
+    const owner=m.ownerId||S.parents[0].id, T2=th(parentById(owner));
+    return '<div class="veil" data-a="close-veil"><div class="modal left">'
+      +'<h3 style="text-align:center">'+(m.id?"Modifier la tâche":"Nouvelle tâche")+'</h3>'
+      +'<label class="fld" style="margin-top:14px"><span>Quoi ?</span>'
+        +'<input class="in" id="mtodo" value="'+esc(m.label||"")+'" placeholder="Ex. : appeler le dentiste"></label>'
+      +'<label class="fld"><span>Pour quand ?</span><input class="in" type="date" id="mdue" value="'+(m.due||"")+'"></label>'
+      +'<div class="chiprow" style="margin:-4px 0 12px">'
+        +[["","Sans date"],[today(),"Aujourd\'hui"],[kOf(new Date(Date.now()+864e5)),"Demain"],[kOf(new Date(Date.now()+6048e5)),"Dans 7 jours"]]
+          .map(o=>'<button class="chip" data-a="todo-quick" data-d="'+o[0]+'" style="font-size:12.5px;min-height:38px;padding:8px 12px">'+o[1]+'</button>').join("")
+      +'</div>'
+      +'<div class="fld"><span>Pour qui ?</span><div class="chiprow">'
+        +S.parents.map(p=>'<button class="chip'+(p.id===owner?" on":"")+'" data-a="todo-owner" data-pid="'+p.id+'" style="'+(p.id===owner?"background:"+th(p).acc:"")+'">'+p.avatar+' '+esc(p.name)+'</button>').join("")
+      +'</div></div>'
+      +'<button class="cta" style="background:'+T2.acc+'" data-a="todo-save">'+(m.id?"Enregistrer":"Ajouter")+'</button>'
+      +'<button class="ghost" data-a="close">Annuler</button></div></div>';
+  }
   if(m.kind==="bonus"||m.kind==="malus"){
     const isB=m.kind==="bonus";
     const kid=m.childId||S.children[0].id;
@@ -1070,9 +1175,9 @@ function modalHTML(){
    10. RENDU GLOBAL
    ================================================================ */
 function render(){
-  const c = ui.kid?childById(ui.kid):null;
+  const c = ui.screen==="adult" ? parentById(ui.pid) : (ui.kid?childById(ui.kid):null);
   const T2 = th(c);
-  document.getElementById("bg").style.background = (ui.screen==="child"&&c)?T2.bg:NEUTRAL;
+  document.getElementById("bg").style.background = ((ui.screen==="child"||ui.screen==="adult")&&c)?T2.bg:NEUTRAL;
   document.documentElement.style.setProperty("--acc",T2.acc);
   document.documentElement.style.setProperty("--deep",T2.deep);
   document.documentElement.style.setProperty("--soft",T2.soft);
@@ -1080,6 +1185,7 @@ function render(){
   if(ui.screen==="lock") app.innerHTML=viewLock();
   else if(ui.screen==="home") app.innerHTML=viewHome()+modalHTML();
   else if(ui.screen==="child") app.innerHTML=viewChild();
+  else if(ui.screen==="adult") app.innerHTML=viewAdult();
   else if(ui.screen==="gate") app.innerHTML=viewGate();
   else app.innerHTML=viewParent();
 }
@@ -1087,6 +1193,14 @@ function render(){
 /* ================================================================
    11. ÉVÉNEMENTS
    ================================================================ */
+// Conserve ce qui est déjà tapé avant que la modale ne soit redessinée
+function syncTodo(){
+  if(!ui.modal) return;
+  const l=document.getElementById("mtodo"), d=document.getElementById("mdue");
+  if(l) ui.modal.label=l.value;
+  if(d) ui.modal.due=d.value;
+}
+
 function setPath(path,val){
   // child.<id>.<champ...>  |  rewards.<i>.<champ>  |  settings.<champ>  |  pin
   const p=path.split(".");
@@ -1113,6 +1227,12 @@ document.addEventListener("input",e=>{
   }
   setPath(el.dataset.f,v);
   save();
+});
+
+document.addEventListener("change",e=>{
+  const el=e.target.closest('[data-a="pa-theme"]');
+  if(!el) return;
+  S.parents[+el.dataset.i].theme=el.value; save(); render();
 });
 
 document.addEventListener("click",async e=>{
@@ -1148,6 +1268,39 @@ document.addEventListener("click",async e=>{
       break;
     }
     case "lock-now": { await local.set(UNLOCK,""); ui.screen="lock"; ui.lock=""; break; }
+
+    case "adult": ui.pid=el.dataset.pid; ui.screen="adult"; break;
+    case "todo-new": ui.modal={kind:"todo",ownerId:el.dataset.pid,label:"",due:""}; break;
+    case "todo-edit": {
+      const t=S.todos.find(x=>x.id===el.dataset.id);
+      ui.modal={kind:"todo",id:t.id,ownerId:t.ownerId,label:t.label,due:t.due||""};
+      break;
+    }
+    case "todo-quick": { syncTodo(); ui.modal.due=el.dataset.d; break; }
+    case "todo-owner": { syncTodo(); ui.modal.ownerId=el.dataset.pid; break; }
+    case "todo-save": {
+      syncTodo();
+      const lb=(ui.modal.label||"").trim();
+      if(!lb){ toast("Écris ce qu'il y a à faire"); return; }
+      if(ui.modal.id){
+        const t=S.todos.find(x=>x.id===ui.modal.id);
+        t.label=lb; t.due=ui.modal.due||""; t.ownerId=ui.modal.ownerId;
+      }else{
+        S.todos.push({id:uid("td"),ownerId:ui.modal.ownerId,label:lb,due:ui.modal.due||"",
+          done:false,by:ui.pid||ui.modal.ownerId,at:nowISO()});
+        const to=parentById(ui.modal.ownerId);
+        if(ui.pid && ui.modal.ownerId!==ui.pid) toast("Tâche ajoutée pour "+to.name);
+      }
+      ui.modal=null; save(); break;
+    }
+    case "todo-tog": {
+      const t=S.todos.find(x=>x.id===el.dataset.id);
+      t.done=!t.done; t.doneAt=t.done?nowISO():null;
+      if(t.done){ const r=el.getBoundingClientRect(); burst(r.left+20,r.top+20,th(parentById(t.ownerId)).conf); }
+      save(); break;
+    }
+    case "todo-del": S.todos=S.todos.filter(x=>x.id!==el.dataset.id); save(); break;
+    case "todo-clear": S.todos=S.todos.filter(x=>!(x.ownerId===el.dataset.pid && x.done)); save(); break;
 
     case "key": {
       const d=el.dataset.d;
@@ -1284,6 +1437,7 @@ function migrate(raw){
   const s=Object.assign(d,raw||{});
   s.settings=Object.assign({},d.settings,raw&&raw.settings||{});
   s.tx=s.tx||[]; s.pending=s.pending||[]; s.awards=s.awards||[];
+  s.parents=(raw&&raw.parents)||d.parents; s.todos=(raw&&raw.todos)||[];
   s.day=s.day||{date:today(),done:{},validated:{},awarded:{}};
   s.day.done=s.day.done||{}; s.day.validated=s.day.validated||{}; s.day.awarded=s.day.awarded||{};
   return s;
