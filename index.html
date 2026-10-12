@@ -182,6 +182,8 @@ textarea.in{min-height:70px;resize:vertical}
 .empty{text-align:center;padding:28px 12px;opacity:.5;font-weight:600;font-size:14.5px;line-height:1.5}
 
 /* ---------- pin ---------- */
+.step.rem{outline:2px solid #F2B451;outline-offset:-2px;background:#FFFDF6}
+.step.rem.done{outline-color:rgba(242,180,81,.35)}
 .due{font-size:12px;font-weight:700;padding:5px 10px;border-radius:999px;white-space:nowrap;flex:0 0 auto}
 .late{background:#FBEEF0;color:#B4404F}
 .soon{background:#FFF3DC;color:#9A6A16}
@@ -278,10 +280,10 @@ const T = (icon,label,group) => ({id:"t"+(++sq),icon,label,group:group||"",activ
 const C = (icon,label,points,help) => ({id:"c"+(++sq),icon,label,points,help:!!help,active:true});
 
 const DEFAULT = {
-  pin:"1234",
+  pin:"159",
   appPin:"2412",
   rev:1,
-  settings:{ routineBonus:5, validateChores:true, notify:false },
+  settings:{ routineBonus:5, validateChores:true, notify:false, schoolDays:[1,2,3,4,5], vacances:false },
   children:[
     {id:"noah",name:"Noah",level:"Collège",avatar:"🎧",tagline:"On avance tranquillement",theme:"bleu",style:"grand",
      targets:{morning:"07:45",evening:"21:30"},
@@ -333,7 +335,18 @@ const DEFAULT = {
         C("🧽","Débarrasser la table",5),C("🧹","Passer l'aspirateur",15),C("🍴","Lave-vaisselle",10),
         C("🧺","S'occuper du linge",10),C("🗑️","Sortir les poubelles",10),C("🪴","Arroser les plantes",5),
         C("🐾","Nourrir l'animal",5),C("👨‍🍳","Préparer un repas",15),C("🛁","Nettoyer la salle de bain",15),
-        C("🛒","Aider aux courses",10)]
+        C("🛒","Aider aux courses",10)],
+      morningWE:[
+        T("😴","Se réveiller"),T("🚽","Aller aux toilettes"),T("🪟","Ouvrir les volets"),
+        T("🥣","Prendre son petit-déjeuner"),T("🧽","Débarrasser"),T("👕","S'habiller"),
+        T("🪥","Se brosser les dents"),T("🪮","Se coiffer"),T("🧴","Crème et parfum"),
+        T("🛏️","Faire son lit")],
+      eveningWE:[
+        T("📥","Ranger ses affaires"),T("🧸","Ranger sa chambre"),T("🍽️","Dîner"),
+        T("🧽","Débarrasser la table"),T("🚿","Prendre sa douche"),T("🪥","Se brosser les dents"),
+        T("🧺","Vêtements sales au panier"),T("🚽","Aller aux toilettes"),
+        T("🔌","Mettre le téléphone à charger"),T("📵","Éteindre les écrans"),
+        T("📖","Lire"),T("🌙","Dodo")]
      }},
     {id:"natheo",name:"Natheo",level:"CM2",avatar:"⚽",tagline:"Prêt pour une belle journée",theme:"turquoise",style:"enfant",
      targets:{morning:"08:00",evening:"20:45"},
@@ -380,7 +393,17 @@ const DEFAULT = {
         C("🧽","Débarrasser la table",5),C("🧹","Passer l'aspirateur",15),C("🍴","Lave-vaisselle",10,true),
         C("🧺","S'occuper du linge",10),C("🗑️","Sortir les poubelles",10),C("🪴","Arroser les plantes",5),
         C("🐾","Nourrir l'animal",5),C("👨‍🍳","Préparer un repas",15,true),C("🚰","Nettoyer le lavabo",10,true),
-        C("🛒","Aider aux courses",10)]
+        C("🛒","Aider aux courses",10)],
+      morningWE:[
+        T("😴","Se réveiller"),T("🚽","Aller aux toilettes"),T("🪟","Ouvrir les volets"),
+        T("🥣","Prendre son petit-déjeuner"),T("🧽","Débarrasser"),T("👕","S'habiller"),
+        T("🪥","Se brosser les dents"),T("🪮","Se coiffer"),T("🧴","Crème et parfum"),
+        T("🛏️","Faire son lit")],
+      eveningWE:[
+        T("🧸","Ranger ses jouets et sa chambre"),T("🍽️","Dîner"),T("🧽","Débarrasser la table"),
+        T("🚿","Prendre sa douche"),T("🌛","Mettre son pyjama"),T("🧺","Vêtements sales au panier"),
+        T("🪥","Se brosser les dents"),T("🚽","Aller aux toilettes"),
+        T("📖","Lire ou boîte à histoires"),T("🌙","Dodo")]
      }},
     {id:"elio",name:"Elio",level:"Moyenne Section",avatar:"🦊",tagline:"Tu es grand maintenant",theme:"soleil",style:"petit",
      targets:{morning:"08:20",evening:"20:00"},
@@ -401,7 +424,15 @@ const DEFAULT = {
         C("🧸","Je range mes jouets",10),C("🍽️","Je mets la table",5),C("🪴","J'arrose les plantes",5),
         C("🛏️","Je fais mon lit",5,true),C("🧽","Je débarrasse",5,true),C("🧺","J'aide pour le linge",10,true),
         C("🗑️","J'aide pour les poubelles",10,true),C("🐾","Je nourris l'animal",5,true),
-        C("🛒","Je range les courses",10,true)]
+        C("🛒","Je range les courses",10,true)],
+      morningWE:[
+        T("🌞","Je me réveille"),T("🚽","Je vais aux toilettes"),T("🥣","Je prends mon petit-déjeuner"),
+        T("🧽","Je débarrasse"),T("🪥","Je brosse mes dents"),T("🌛","J'enlève mon pyjama"),
+        T("👕","Je m'habille"),T("🪮","Je fais mes cheveux")],
+      eveningWE:[
+        T("🧸","Je range mes jouets"),T("🍽️","Je mange"),T("🚿","Je prends ma douche"),
+        T("🌛","Je mets mon pyjama"),T("🪥","Je brosse mes dents"),T("🧸","Je prépare mon doudou"),
+        T("🚽","Je vais aux toilettes"),T("📖","J'écoute une histoire")]
      }}
   ],
   parents:[
@@ -429,8 +460,8 @@ const DEFAULT = {
     {id:"p8",label:"Tâche volontairement non faite",amount:10}
   ],
   reminders:[
-    {id:"rm1",label:"Préparer le sac",time:"19:30",days:[1,2,3,4,5],who:"all",active:true},
-    {id:"rm2",label:"Affaires de sport",time:"18:00",days:[3],who:"natheo",active:true}
+    {id:"rm1",label:"Préparer le sac",time:"19:30",days:[1,2,3,4,5],date:"",who:"all",slot:"evening",important:false,active:true},
+    {id:"rm2",label:"Affaires de sport",time:"07:00",days:[3],date:"",who:"natheo",slot:"morning",important:true,active:true}
   ],
   tx:[],
   pending:[],
@@ -454,6 +485,7 @@ const MEDALS = [
 /* ================================================================
    4. STOCKAGE — Supabase > stockage local > mémoire
    ================================================================ */
+const VERSION = "2026.10.12-a";
 const KEY = "famille-routines-v3";
 const CFGKEY = "famille-supabase";
 const UNLOCK = "famille-unlock";
@@ -472,45 +504,157 @@ const local = {
   }
 };
 
-let SB = {url:"",key:""};
+/* ══════════════════════════════════════════════════════════════════
+   ⬇️   LES DEUX SEULES LIGNES À REMPLIR   ⬇️
+   Une fois remplies ici, TOUS les appareils qui ouvrent cette page
+   sont synchronisés automatiquement. Rien à saisir sur les téléphones,
+   rien à configurer dans les réglages.
+   ══════════════════════════════════════════════════════════════════ */
+const SERVEUR = {
+  url: "https://famille.delmarle-celine59.workers.dev",
+  cle: "famille-beaurepaire-2026"   // doit être identique au secret CLE du Worker
+};
+/* ══════════════════════════════════════════════════════════════════ */
+
+let SB = {url:SERVEUR.url||"", key:SERVEUR.cle||"", mode:""};
 // Accepte aussi bien https://xxx.supabase.co que https://xxx.supabase.co/rest/v1/
 const sbBase = () => SB.url.trim().replace(/\/+$/,"").replace(/\/rest\/v1$/,"");
 const sbOn = () => !!(SB.url && SB.key);
 const sbHead = () => {
+  const h = {"Content-Type":"application/json"};
+  if(sbMode()==="worker"){ h["x-famille-key"] = SB.key; return h; }
   // Les clés sb_publishable_… se transmettent uniquement dans l'en-tête apikey.
   // Les anciennes clés anon sont des JWT (eyJ…) et acceptent aussi Authorization.
-  const h = {apikey:SB.key,"Content-Type":"application/json"};
+  h.apikey = SB.key;
   if(/^eyJ/.test(SB.key)) h.Authorization = "Bearer "+SB.key;
   return h;
 };
 
-async function sbLoad(){
-  if(!sbOn()) return null;
-  const r = await fetch(sbBase()+"/rest/v1/famille?id=eq.main&select=data,rev",{headers:sbHead()});
-  if(!r.ok) throw new Error("Supabase "+r.status);
-  const rows = await r.json();
-  return rows[0] ? rows[0].data : null;
-}
-async function sbSave(data){
-  if(!sbOn()) return;
-  const r = await fetch(sbBase()+"/rest/v1/famille?on_conflict=id",{
-    method:"POST",
-    headers:Object.assign(sbHead(),{Prefer:"resolution=merge-duplicates,return=minimal"}),
-    body:JSON.stringify({id:"main",data:data,rev:data.rev,updated_at:nowISO()})
+let lastRev = 0;        // version connue de la copie distante
+let pushPending = false; // une écriture locale attend d'être envoyée
+let base = null;         // dernier état commun avec la copie distante
+
+const deep = o => JSON.parse(JSON.stringify(o));
+const same = (a,b) => JSON.stringify(a)===JSON.stringify(b);
+
+// Choisit entre distant et local : le local ne gagne que si je l'ai modifié.
+function pick(r,m,b){ return same(m,b) ? r : m; }
+
+// Fusionne deux listes d'objets identifiés, en respectant ajouts et suppressions
+// faits de chaque côté depuis le dernier point commun.
+function mergeById(rArr,mArr,bArr){
+  const R={},M={},B={};
+  (rArr||[]).forEach(x=>R[x.id]=x); (mArr||[]).forEach(x=>M[x.id]=x); (bArr||[]).forEach(x=>B[x.id]=x);
+  const ids={}; [R,M,B].forEach(o=>Object.keys(o).forEach(k=>ids[k]=1));
+  const out=[];
+  Object.keys(ids).forEach(id=>{
+    const inR=id in R, inM=id in M, inB=id in B;
+    if(!inB){ out.push(inM?M[id]:R[id]); return; }        // ajouté d'un côté ou de l'autre
+    if(!inM || !inR) return;                              // supprimé quelque part : on retire
+    out.push(same(M[id],B[id]) ? R[id] : M[id]);          // modifié chez moi : ma version
   });
-  if(!r.ok) throw new Error("Supabase "+r.status);
+  return out.sort((a,b)=>String(a.at||"").localeCompare(String(b.at||"")));
+}
+
+// Fusionne les cases cochées du jour, créneau par créneau.
+function mergeDay(r,m,b){
+  if(r.date!==m.date) return m.date===today() ? deep(m) : deep(r);
+  const out={date:m.date,done:{},validated:{},awarded:{}};
+  ["done","validated","awarded"].forEach(f=>{
+    const keys={};
+    [r[f]||{},m[f]||{},b[f]||{}].forEach(o=>Object.keys(o).forEach(k=>keys[k]=1));
+    Object.keys(keys).forEach(k=>{
+      const v=pick((r[f]||{})[k],(m[f]||{})[k],(b[f]||{})[k]);
+      if(v!==undefined) out[f][k]=v;
+    });
+  });
+  return out;
+}
+
+function mergeState(remoteData){
+  const r=migrate(remoteData), m=S, b=base||r;
+  const out=deep(r);
+  out.tx      = mergeById(r.tx,      m.tx,      b.tx);
+  out.pending = mergeById(r.pending, m.pending, b.pending);
+  out.awards  = mergeById(r.awards,  m.awards,  b.awards);
+  out.todos   = mergeById(r.todos,   m.todos,   b.todos);
+  out.day     = mergeDay(r.day, m.day, b.day||r.day);
+  ["children","rewards","penalties","reminders","parents","settings","pin","appPin"]
+    .forEach(f=>{ out[f]=pick(r[f],m[f],b[f]); });
+  return out;
+}
+
+/* --- état de la synchronisation : ne plus jamais échouer en silence --- */
+let syncState = {ok:null,msg:"",at:null};
+function markSync(ok,msg){ syncState={ok:ok,msg:msg||"",at:Date.now()}; }
+
+function httpMsg(st){
+  if(st===401||st===403) return "mot de passe refusé par le serveur";
+  if(st===404) return "adresse introuvable, ou table non exposée";
+  if(st===409) return "conflit d'écriture";
+  if(st>=500) return "projet en pause ou serveur indisponible";
+  return "erreur "+st;
+}
+
+// Deux serveurs possibles : Supabase (API REST) ou un Worker Cloudflare.
+// Le mode est déduit de l'adresse, et peut être forcé dans les réglages.
+const sbMode = () => SB.mode || (/supabase\.co/i.test(SB.url) ? "supabase" : "worker");
+
+async function sbLoad(){
+  if(!sbOn()){ markSync(false,"appareil non configuré"); return null; }
+  const worker = sbMode()==="worker";
+  const url = worker ? sbBase() : sbBase()+"/rest/v1/famille?id=eq.main&select=data,rev";
+  let r;
+  try{ r = await fetch(url,{headers:sbHead()}); }
+  catch(e){ markSync(false,"serveur injoignable"); throw new Error("serveur injoignable"); }
+  if(!r.ok){ markSync(false,httpMsg(r.status)); throw new Error("Erreur "+r.status); }
+  const j = await r.json();
+  markSync(true,"");
+  if(worker) return (j && j.data) ? {data:j.data,rev:j.rev||0} : null;
+  return j[0] || null;
+}
+
+async function sbSave(data){
+  if(!sbOn()){ markSync(false,"appareil non configuré"); return; }
+  const worker = sbMode()==="worker";
+  let r;
+  try{
+    r = worker
+      ? await fetch(sbBase(),{method:"POST",headers:sbHead(),
+          body:JSON.stringify({rev:data.rev,data:data})})
+      : await fetch(sbBase()+"/rest/v1/famille?on_conflict=id",{method:"POST",
+          headers:Object.assign(sbHead(),{Prefer:"resolution=merge-duplicates,return=minimal"}),
+          body:JSON.stringify({id:"main",data:data,rev:data.rev,updated_at:nowISO()})});
+  }catch(e){ markSync(false,"serveur injoignable"); throw new Error("serveur injoignable"); }
+  if(!r.ok){ markSync(false,httpMsg(r.status)); throw new Error("Erreur "+r.status); }
+  markSync(true,"");
 }
 
 let saveTimer=null, savingBadge=null;
 function flagSync(on){ const el=document.getElementById("sync"); if(el) el.classList.toggle("on",on); }
 function save(){
-  S.rev = (S.rev||0)+1;
+  S.rev = Date.now();
   local.set(KEY, JSON.stringify(S));
   if(!sbOn()) return;
+  pushPending = true;
   clearTimeout(saveTimer);
   flagSync(true);
   saveTimer = setTimeout(async ()=>{
-    try{ await sbSave(S); }catch(e){ toast("Synchro impossible : "+e.message); }
+    try{
+      // Si quelqu'un d'autre a écrit depuis notre dernière lecture, on fusionne
+      // au lieu d'écraser sa version.
+      const row = await sbLoad();
+      let fusion = false;
+      if(row && row.rev !== lastRev && base){ S = mergeState(row.data); fusion = true; }
+      S.rev = Date.now();
+      await sbSave(S);
+      lastRev = S.rev;
+      base = deep(S);
+      local.set(KEY, JSON.stringify(S));
+      if(fusion) softRender();   // rien de neuf à afficher sinon
+    }
+    catch(e){ toast("Synchro impossible : "+e.message); }
+    pushPending = false;
     flagSync(false);
   },600);
 }
@@ -519,7 +663,7 @@ function save(){
    5. ÉTAT
    ================================================================ */
 let S = null;
-let ui = {screen:"home",kid:null,tab:"morning",ptab:"dash",pin:"",lock:"",bad:false,modal:null,edit:{kid:"noah",list:"morning"}};
+let ui = {screen:"home",kid:null,pid:null,tab:"morning",ptab:"dash",pin:"",lock:"",bad:false,modal:null,remSeen:{},edit:{kid:"noah",list:"morning"}};
 
 function rollover(){
   if(S.day.date !== today()){
@@ -528,6 +672,23 @@ function rollover(){
   }
   return false;
 }
+// Un jour d'école : ni vacances, ni jour décoché dans les réglages.
+function isSchoolDay(d){
+  if(S.settings.vacances) return false;
+  return (S.settings.schoolDays||[1,2,3,4,5]).indexOf((d||new Date()).getDay())>=0;
+}
+const tomorrow = () => new Date(Date.now()+864e5);
+
+// Le matin dépend du jour même, le soir dépend du lendemain :
+// vendredi et samedi soir sont des soirées sans école, dimanche soir non.
+function variant(tab){
+  if(tab==="chores") return "chores";
+  if(tab==="morning") return isSchoolDay(new Date()) ? "morning" : "morningWE";
+  return isSchoolDay(tomorrow()) ? "evening" : "eveningWE";
+}
+const baseTab = k => k.replace(/WE$/,"");
+function isWE(tab){ return variant(tab)!==tab && tab!=="chores"; }
+
 function parentById(id){ return S.parents.find(p=>p.id===id); }
 
 // Échéances : renvoie le libellé et la classe visuelle d'une date
@@ -554,7 +715,26 @@ function balance(id){ return S.tx.filter(t=>t.childId===id).reduce((a,t)=>a+t.am
 function slot(id,tab){ return id+":"+tab; }
 function doneList(id,tab){ return S.day.done[slot(id,tab)] || []; }
 function isDone(id,tab,tid){ return doneList(id,tab).indexOf(tid)>=0; }
-function activeList(c,tab){ return (c.routines[tab]||[]).filter(t=>t.active); }
+// Rappels qui concernent cet enfant, ce moment de la journée, aujourd'hui.
+function remsFor(childId,slot){
+  const d=new Date().getDay(), t=today();
+  return (S.reminders||[]).filter(r=>{
+    if(!r.active) return false;
+    if((r.slot||"morning")!==slot) return false;
+    if(r.who!=="all" && r.who!==childId) return false;
+    if(r.date) return r.date===t;
+    return (r.days||[]).indexOf(d)>=0;
+  });
+}
+const remStep = r => ({id:"rm:"+r.id,icon:"🔔",label:r.label,group:"",active:true,isRem:true});
+
+function activeList(c,tab){
+  const list=(c.routines[tab]||[]).filter(t=>t.active);
+  if(tab==="chores") return list;
+  // Les rappels importants deviennent la première étape de la routine du jour.
+  const imp=remsFor(c.id,baseTab(tab)).filter(r=>r.important).map(remStep);
+  return imp.concat(list);
+}
 
 function stats(id){
   const tx = S.tx.filter(t=>t.childId===id);
@@ -649,7 +829,8 @@ function toggleStep(childId,tab,tid){
     if(at<0){
       if(S.settings.validateChores){
         S.pending.push({id:uid("pd"),kind:"chore",childId,refId:tid,label:chore.label,icon:chore.icon,points:chore.points,at:nowISO()});
-        toast("Envoyé aux parents pour validation ⏳");
+        toast(sbOn() ? "Envoyé aux parents pour validation ⏳"
+                     : "Coché — non synchronisé (appareil hors ligne) ⚠️");
       }else{
         addTx(childId,chore.points,"chore",chore.label,"auto");
         toast("+"+chore.points+" points ⭐");
@@ -663,9 +844,10 @@ function toggleStep(childId,tab,tid){
     const flag = childId+":"+tab;
     if(all && !S.day.awarded[flag]){
       S.day.awarded[flag]=true;
-      addTx(childId,S.settings.routineBonus,"routine_"+tab,
-        tab==="morning"?"Routine du matin":"Routine du soir","auto");
-      ui.modal={kind:"routine",childId,tab};
+      const bt = baseTab(tab);
+      addTx(childId,S.settings.routineBonus,"routine_"+bt,
+        bt==="morning"?"Routine du matin":"Routine du soir","auto");
+      ui.modal={kind:"routine",childId,tab:bt};
       setTimeout(()=>boom(th(c).conf,110),120);
     }
   }
@@ -715,10 +897,11 @@ function stepHTML(c,tab,t,big){
   const T2=th(c), on=isDone(c.id,tab,t.id);
   const validated = tab==="chores" && (S.day.validated[slot(c.id,tab)]||[]).indexOf(t.id)>=0;
   const waiting = tab==="chores" && on && !validated && S.settings.validateChores;
-  return '<button class="step'+(big?" big":"")+(on?" done on":"")+'" data-a="step" data-kid="'+c.id+'" data-tab="'+tab+'" data-id="'+t.id+'" style="'+(on?"background:"+T2.tint+";color:"+T2.acc+";":"")+'">'
+  return '<button class="step'+(big?" big":"")+(t.isRem?" rem":"")+(on?" done on":"")+'" data-a="step" data-kid="'+c.id+'" data-tab="'+tab+'" data-id="'+t.id+'" style="'+(on?"background:"+T2.tint+";color:"+T2.acc+";":"")+'">'
     +'<span class="box" style="background:'+(on?T2.acc:T2.tint)+';'+(on?"":"box-shadow:inset 0 0 0 2.5px "+T2.soft)+'">'+(on?checkSvg():"")+'</span>'
     +'<span class="em">'+t.icon+'</span>'
     +'<span class="lb" style="color:var(--ink)">'+esc(t.label)
+      +(t.isRem?'<span class="hint2" style="color:#B4700F">à ne pas oublier aujourd\'hui</span>':"")
       +(tab==="chores"&&t.help?'<span class="hint2">avec un adulte 🤝</span>':"")
       +(waiting?'<span class="hint2">en attente de validation ⏳</span>':"")
       +(validated?'<span class="hint2">validée ✅</span>':"")
@@ -746,7 +929,8 @@ function viewHome(){
   let cards = S.children.map(c=>{
     const T2=th(c), b=balance(c.id);
     const mk=(tab)=>{
-      const l=activeList(c,tab), d=doneList(c.id,tab).length;
+      const vk=variant(tab);
+      const l=activeList(c,vk), d=doneList(c.id,vk).length;
       if(!l.length) return '<span class="mini-chip">—</span>';
       const cls = d===l.length?"s-ok":(d>0?"s-run":"s-no");
       const em = tab==="morning"?"🌅":"🌙";
@@ -779,6 +963,7 @@ function viewHome(){
   return '<div class="shell"><div class="home-top">'
     +'<div class="dt">'+pretty()+'</div><h1>Qui es-tu ?</h1>'
     +'<p>Choisis ton prénom pour voir ta journée</p></div>'
+    +syncBanner()
     +'<div class="kids">'+cards+'</div>'
     +'<div class="glabel" style="margin-top:26px">Les parents</div>'
     +'<div class="kids">'+adults+'</div>'
@@ -793,24 +978,29 @@ function viewChild(){
     +'<button class="pill" data-a="home" style="color:'+T2.deep+'">← Changer de profil</button>'
     +'<button class="icon-btn grow" data-a="gate" aria-label="Espace parents">⚙</button></div>'
     +'<div class="head"><span class="face" style="background:'+T2.soft+'">'+c.avatar+'</span>'
-    +'<div><h2 style="color:'+T2.deep+'">'+esc(c.name)+'</h2><div class="sub">'+pretty()+'</div></div>'
+    +'<div><h2 style="color:'+T2.deep+'">'+esc(c.name)+'</h2><div class="sub">'+pretty()
+    +(isSchoolDay(new Date())?"":' · pas d\'école 🎈')+'</div></div>'
     +'<div class="score" style="color:'+T2.deep+'"><b>⭐ '+balance(c.id)+'</b><span>MES POINTS</span></div></div>'
     +'<div class="tabs">'+TABS.map(t=>'<button class="tab'+(tab===t[0]?" on":"")+'" data-a="tab" data-tab="'+t[0]+'" style="'+(tab===t[0]?"background:"+T2.acc:"color:"+T2.deep)+'"><span class="em">'+t[1]+'</span>'+t[2]+'</button>').join("")+'</div>';
 
-  const todayRem = S.reminders.filter(r=>r.active && (r.who==="all"||r.who===c.id) && r.days.indexOf(new Date().getDay())>=0);
+  const todayRem = remsFor(c.id,baseTab(variant(tab==="chores"?"morning":tab))).filter(r=>!r.important);
   const remHTML = todayRem.length ? '<div class="card" style="background:'+T2.tint+'"><div class="rowb"><span class="l" style="font-size:14.5px;color:'+T2.deep+'">🔔 Aujourd\'hui</span></div><div style="font-size:14px;font-weight:600;opacity:.7;margin-top:6px;line-height:1.5">'+todayRem.map(r=>prettyH(r.time)+" — "+esc(r.label)).join("<br>")+'</div></div>' : "";
 
   let body="";
   if(tab==="morning"||tab==="evening"){
-    const list=activeList(c,tab), d=doneList(c.id,tab).filter(x=>list.some(t=>t.id===x)).length;
+    const vk=variant(tab), we=vk!==tab;
+    const list=activeList(c,vk), d=doneList(c.id,vk).filter(x=>list.some(t=>t.id===x)).length;
     const pct = list.length?Math.round(d/list.length*100):0;
     const starLine = d?("⭐".repeat(Math.min(d,18))+(d>18?" +"+(d-18):"")):"";
+    const right = we
+      ? (tab==="morning" ? "Pas d'école aujourd'hui 🎈" : "Pas d'école demain 🎈")
+      : (tab==="morning" ? "Prêt à "+prettyH(c.targets.morning) : "Au lit à "+prettyH(c.targets.evening));
     body = remHTML
       +'<div class="card"><div class="rowb"><span class="l" style="color:'+T2.deep+'">'+d+' / '+list.length+' '+(c.style==="petit"?"images":"tâches")+(d===list.length&&list.length?" 🎉":"")+'</span>'
-      +'<span class="r">'+(tab==="morning"?"Prêt à "+prettyH(c.targets.morning):"Au lit à "+prettyH(c.targets.evening))+'<br>Routine complète : +'+S.settings.routineBonus+' ⭐</span></div>'
+      +'<span class="r">'+right+'<br>Routine complète : +'+S.settings.routineBonus+' ⭐</span></div>'
       +'<div class="bar" style="background:'+T2.soft+'"><i style="width:'+pct+'%;background:'+T2.acc+'"></i></div>'
       +'<div class="stars">'+(d?starLine:'<span class="n">Coche ta première étape</span>')+'</div></div>'
-      +listHTML(c,tab);
+      +listHTML(c,vk);
   }
   else if(tab==="chores"){
     const list=activeList(c,"chores");
@@ -896,11 +1086,12 @@ function txHTML(t){
 
 /* ---------------- espace parents ---------------- */
 function viewLock(){
+  const n=(S.appPin||"2412").length;
   return '<div class="shell"><div class="pin'+(ui.bad?" shake":"")+'" style="margin-top:70px">'
     +'<div style="font-size:44px">🏠</div>'
     +'<h2 style="font-size:26px;margin:10px 0 2px">Notre famille</h2>'
     +'<p style="opacity:.55;font-size:14.5px;margin:0">'+(ui.bad?"Code incorrect.":"Entre le code de la maison")+'</p>'
-    +'<div class="dots">'+[0,1,2,3].map(i=>'<span class="dot" style="'+(ui.lock.length>i?"background:#34405C":"")+'"></span>').join("")+'</div>'
+    +'<div class="dots">'+Array.from({length:n},(_,i)=>'<span class="dot" style="'+(ui.lock.length>i?"background:#34405C":"")+'"></span>').join("")+'</div>'
     +'<div class="keys">'+["1","2","3","4","5","6","7","8","9"].map(d=>'<button data-a="lkey" data-d="'+d+'">'+d+'</button>').join("")
     +'<button data-a="lkey" data-d="c" style="font-size:14px;opacity:.55">Effacer</button>'
     +'<button data-a="lkey" data-d="0">0</button>'
@@ -910,11 +1101,12 @@ function viewLock(){
 }
 
 function viewGate(){
+  const n=(S.pin||"159").length;
   return '<div class="shell"><div class="topbar"><button class="pill" data-a="back">← Retour</button></div>'
     +'<div class="pin'+(ui.bad?" shake":"")+'"><div style="font-size:38px">🔒</div>'
     +'<h2 style="font-size:23px;margin:8px 0 2px">Espace parents</h2>'
-    +'<p style="opacity:.55;font-size:14.5px;margin:0">'+(ui.bad?"Code incorrect.":"Entre le code à 4 chiffres")+'</p>'
-    +'<div class="dots">'+[0,1,2,3].map(i=>'<span class="dot" style="'+(ui.pin.length>i?"background:#34405C":"")+'"></span>').join("")+'</div>'
+    +'<p style="opacity:.55;font-size:14.5px;margin:0">'+(ui.bad?"Code incorrect.":"Entre le code à "+n+" chiffres")+'</p>'
+    +'<div class="dots">'+Array.from({length:n},(_,i)=>'<span class="dot" style="'+(ui.pin.length>i?"background:#34405C":"")+'"></span>').join("")+'</div>'
     +'<div class="keys">'+["1","2","3","4","5","6","7","8","9"].map(d=>'<button data-a="key" data-d="'+d+'">'+d+'</button>').join("")
     +'<button data-a="key" data-d="c" style="font-size:14px;opacity:.55">Effacer</button>'
     +'<button data-a="key" data-d="0">0</button>'
@@ -943,7 +1135,8 @@ function viewParent(){
 function pDash(){
   const rows=S.children.map(c=>{
     const st=(tab)=>{
-      const l=activeList(c,tab), d=doneList(c.id,tab).length;
+      const vk=variant(tab);
+      const l=activeList(c,vk), d=doneList(c.id,vk).length;
       if(!l.length) return '<span class="state s-no">—</span>';
       if(d===l.length) return '<span class="state s-ok">'+(tab==="morning"?"Matin":"Soir")+' ✅</span>';
       if(d>0) return '<span class="state s-run">'+(tab==="morning"?"Matin":"Soir")+' '+d+'/'+l.length+'</span>';
@@ -958,7 +1151,8 @@ function pDash(){
       +(w?'<span class="state s-run">⏳ '+w+' à valider</span>':"")+'</div></div>'
       +'<button class="mini" data-a="open-kid" data-kid="'+c.id+'" aria-label="Voir">›</button></div>';
   }).join("");
-  return '<div class="sheet"><h4>Où en est chacun</h4><p class="hint">Mis à jour en direct '+(sbOn()?"sur tous les appareils.":"sur cet appareil.")+'</p>'+rows+'</div>'
+  return syncBanner()
+    +'<div class="sheet"><h4>Où en est chacun</h4><p class="hint">Mis à jour en direct '+(sbOn()&&syncState.ok!==false?"sur tous les appareils.":"sur cet appareil uniquement.")+'</p>'+rows+'</div>'
     +'<div class="sheet"><h4>Actions rapides</h4>'
     +'<button class="wide-btn prim" style="background:#7FA3D4" data-a="modal" data-m="bonus">🎁 Donner un bonus</button>'
     +'<button class="wide-btn danger" data-a="modal" data-m="malus">⚠️ Appliquer un malus</button>'
@@ -1029,7 +1223,8 @@ function pLists(){
   const L=ui.edit.list, arr=c.routines[L]||[], isCh=L==="chores";
   const kidChips=S.children.map(k=>'<button class="chip'+(k.id===c.id?" on":"")+'" data-a="ed-kid" data-kid="'+k.id+'" style="'+(k.id===c.id?"background:"+th(k).acc:"")+'">'+k.avatar+' '+esc(k.name)+'</button>').join("")
     +'<button class="chip" data-a="kid-add">+ Ajouter un enfant</button>';
-  const listChips=[["morning","☀️ Matin"],["evening","🌙 Soir"],["chores","🧹 Maison"]]
+  const listChips=[["morning","☀️ Matin école"],["morningWE","🎈 Matin sans école"],
+                   ["evening","🌙 Soir école"],["eveningWE","🎈 Soir sans école"],["chores","🧹 Maison"]]
     .map(x=>'<button class="chip'+(L===x[0]?" on":"")+'" data-a="ed-list" data-l="'+x[0]+'" style="'+(L===x[0]?"background:"+th(c).acc:"")+'">'+x[1]+'</button>').join("");
 
   const rows=arr.map((t,i)=>'<div class="erow'+(t.active?"":" off")+'">'
@@ -1057,32 +1252,59 @@ function pLists(){
       +'<div class="fld"><span>Couleur</span><div class="chiprow">'+Object.keys(THEMES).map(k=>'<button class="chip'+(c.theme===k?" on":"")+'" data-a="ed-theme" data-k="'+k+'" style="'+(c.theme===k?"background:"+THEMES[k].acc:"background:"+THEMES[k].soft+";color:"+THEMES[k].deep)+'">'+THEMES[k].label+'</button>').join("")+'</div></div>'
       +'<div class="fld"><span>Présentation</span><div class="chiprow">'+[["grand","Sobre"],["enfant","Standard"],["petit","Grandes images"]].map(s=>'<button class="chip'+(c.style===s[0]?" on":"")+'" data-a="ed-style" data-s="'+s[0]+'" style="'+(c.style===s[0]?"background:"+th(c).acc:"")+'">'+s[1]+'</button>').join("")+'</div></div>'
       +'<button class="wide-btn danger" data-a="kid-del" data-kid="'+c.id+'">Supprimer '+esc(c.name)+'</button></div>'
-    +'<div class="sheet"><h4>'+(isCh?"Tâches maison":"Étapes")+' — '+esc(c.name)+'</h4>'
+    +'<div class="sheet"><h4>'+(isCh?"Tâches maison":({morning:"Étapes du matin — jours d\'école",morningWE:"Étapes du matin — sans école",evening:"Étapes du soir — veille d\'école",eveningWE:"Étapes du soir — veille sans école"}[L]))+' — '+esc(c.name)+'</h4>'
       +'<p class="hint">'+(isCh?"Le chiffre est le nombre de points. La main indique une tâche à faire avec un adulte."
-        :"Le champ « groupe » regroupe les étapes sous un titre (Le lever, Se préparer…). Laisse-le vide pour une liste simple.")+'</p>'
+        :(L.endsWith("WE")?"Cette liste s'affiche automatiquement : le matin des jours sans école, et le soir quand il n'y a pas école le lendemain (vendredi et samedi soir)."
+          :"Le champ « groupe » regroupe les étapes sous un titre. Laisse-le vide pour une liste simple."))+'</p>'
       +(rows||'<p class="empty">Liste vide.</p>')
       +'<button class="wide-btn" data-a="st-add">+ Ajouter '+(isCh?"une tâche":"une étape")+'</button></div>';
 }
 
 function pRem(){
   const D=["D","L","M","M","J","V","S"];
-  const rows=S.reminders.map((r,i)=>'<div class="sheet" style="padding:16px"><div class="duo">'
+  const rows=S.reminders.map((r,i)=>{
+    const once=!!r.date, passe=once && r.date<today();
+    return '<div class="sheet" style="padding:16px'+(passe?";opacity:.5":"")+'">'
+    +'<div class="duo">'
     +'<label class="fld" style="min-width:150px"><span>Rappel</span><input class="in" data-f="reminders.'+i+'.label" value="'+esc(r.label)+'"></label>'
     +'<label class="fld" style="flex:0 0 110px"><span>Heure</span><input class="in" type="time" data-f="reminders.'+i+'.time" value="'+r.time+'"></label></div>'
-    +'<div class="fld"><span>Jours</span><div class="chiprow">'+D.map((d,j)=>'<button class="chip'+(r.days.indexOf(j)>=0?" on":"")+'" data-a="rem-day" data-i="'+i+'" data-j="'+j+'" style="'+(r.days.indexOf(j)>=0?"background:var(--acc)":"")+'">'+d+'</button>').join("")+'</div></div>'
+    +'<div class="fld"><span>Quand</span><div class="chiprow">'
+      +'<button class="chip'+(once?"":" on")+'" data-a="rem-mode" data-i="'+i+'" data-m="week" style="'+(once?"":"background:var(--acc)")+'">Chaque semaine</button>'
+      +'<button class="chip'+(once?" on":"")+'" data-a="rem-mode" data-i="'+i+'" data-m="once" style="'+(once?"background:var(--acc)":"")+'">Une seule date</button>'
+    +'</div></div>'
+    +(once
+      ? '<label class="fld"><span>Le'+(passe?" (date passée)":"")+'</span><input class="in" type="date" data-f="reminders.'+i+'.date" value="'+r.date+'"></label>'
+      : '<div class="fld"><span>Jours</span><div class="chiprow">'+D.map((d,j)=>'<button class="chip'+((r.days||[]).indexOf(j)>=0?" on":"")+'" data-a="rem-day" data-i="'+i+'" data-j="'+j+'" style="'+((r.days||[]).indexOf(j)>=0?"background:var(--acc)":"")+'">'+d+'</button>').join("")+'</div></div>')
+    +'<div class="fld"><span>Moment</span><div class="chiprow">'
+      +[["morning","☀️ Matin"],["evening","🌙 Soir"]].map(o=>'<button class="chip'+((r.slot||"morning")===o[0]?" on":"")+'" data-a="rem-slot" data-i="'+i+'" data-s="'+o[0]+'" style="'+((r.slot||"morning")===o[0]?"background:var(--acc)":"")+'">'+o[1]+'</button>').join("")
+    +'</div></div>'
     +'<div class="fld"><span>Pour qui</span><div class="chiprow">'
-      +'<button class="chip'+(r.who==="all"?" on":"")+'" data-a="rem-who" data-i="'+i+'" data-w="all" style="'+(r.who==="all"?"background:var(--acc)":"")+'">Tout le monde</button>'
+      +'<button class="chip'+(r.who==="all"?" on":"")+'" data-a="rem-who" data-i="'+i+'" data-w="all" style="'+(r.who==="all"?"background:var(--acc)":"")+'">Tous les enfants</button>'
       +S.children.map(c=>'<button class="chip'+(r.who===c.id?" on":"")+'" data-a="rem-who" data-i="'+i+'" data-w="'+c.id+'" style="'+(r.who===c.id?"background:"+th(c).acc:"")+'">'+c.avatar+' '+esc(c.name)+'</button>').join("")
     +'</div></div>'
-    +'<button class="wide-btn danger" data-a="rem-del" data-i="'+i+'">Supprimer ce rappel</button></div>').join("");
-  return '<div class="sheet"><h4>Rappels</h4><p class="hint">Ils s\'affichent dans l\'espace de l\'enfant le jour dit. Si les notifications du navigateur sont autorisées, une alerte apparaît aussi quand l\'appli est ouverte.</p>'
-    +'<button class="wide-btn'+(S.settings.notify?" ok":"")+'" data-a="notify">'+(S.settings.notify?"Notifications activées ✅":"Activer les notifications du navigateur")+'</button></div>'
+    +'<button class="wide-btn'+(r.important?" ok":"")+'" data-a="rem-imp" data-i="'+i+'">'
+      +(r.important?"🔔 Important : s'ouvre et s'ajoute en tête de routine ✅":"Marquer comme important")+'</button>'
+    +'<button class="wide-btn danger" data-a="rem-del" data-i="'+i+'">Supprimer ce rappel</button></div>';
+  }).join("");
+  return '<div class="sheet"><h4>Rappels</h4>'
+    +'<p class="hint">Un rappel simple s\'affiche en bandeau dans l\'espace de l\'enfant. Un rappel <b>important</b> s\'ouvre en plein écran quand il ouvre sa routine, et devient la première étape à cocher — la routine n\'est pas complète tant qu\'elle n\'est pas faite.</p>'
+    +'<button class="wide-btn'+(S.settings.notify?" ok":"")+'" data-a="notify">'+(S.settings.notify?"Notifications du navigateur activées ✅":"Activer les notifications du navigateur")+'</button></div>'
     +(rows||'<div class="sheet"><p class="empty">Aucun rappel.</p></div>')
     +'<button class="wide-btn" data-a="rem-add" style="background:#fff;box-shadow:0 14px 34px -26px rgba(52,64,92,.9)">+ Ajouter un rappel</button>';
 }
 
 function pSet(){
-  return '<div class="sheet"><h4>Règles</h4><p class="hint">Une routine complète crédite le bonus une seule fois par jour et par moment.</p>'
+  const D=[["1","Lun"],["2","Mar"],["3","Mer"],["4","Jeu"],["5","Ven"],["6","Sam"],["0","Dim"]];
+  const sd=S.settings.schoolDays||[];
+  return '<div class="sheet"><h4>Jours d\'école</h4>'
+    +'<p class="hint">Le matin, la routine dépend du jour même. Le soir, elle dépend du lendemain : c\'est pourquoi vendredi et samedi soir sont des soirées sans école, mais pas dimanche soir. Décoche le mercredi si les petits n\'ont pas classe.</p>'
+    +'<div class="chiprow">'+D.map(d=>'<button class="chip'+(sd.indexOf(+d[0])>=0?" on":"")+'" data-a="sch-day" data-d="'+d[0]+'" style="'+(sd.indexOf(+d[0])>=0?"background:var(--acc)":"")+'">'+d[1]+'</button>').join("")+'</div>'
+    +'<button class="wide-btn'+(S.settings.vacances?" ok":"")+'" data-a="tog-vac">'
+      +(S.settings.vacances?"🎈 Mode vacances activé — routines allégées tous les jours":"Activer le mode vacances")+'</button>'
+    +'<div style="font-size:12.5px;opacity:.55;font-weight:600;margin-top:10px">Aujourd\'hui : '
+      +(isSchoolDay(new Date())?"jour d'école":"pas d'école")+' · demain : '
+      +(isSchoolDay(tomorrow())?"jour d'école":"pas d'école")+'</div></div>'
+    +'<div class="sheet"><h4>Règles</h4><p class="hint">Une routine complète crédite le bonus une seule fois par jour et par moment.</p>'
     +'<label class="fld" style="max-width:170px"><span>Bonus par routine complète</span><input class="in" inputmode="numeric" data-f="settings.routineBonus" value="'+S.settings.routineBonus+'"></label>'
     +'<button class="wide-btn'+(S.settings.validateChores?" ok":"")+'" data-a="tog-valid">'
       +(S.settings.validateChores?"Validation parentale des tâches : activée ✅":"Validation parentale des tâches : désactivée")+'</button></div>'
@@ -1096,19 +1318,31 @@ function pSet(){
       +'</select></div>').join("")
     +'</div>'
     +'<div class="sheet"><h4>Codes</h4>'
-    +'<p class="hint">Le code de la maison ouvre l\'appli, demandé une seule fois par appareil. Le code parents protège cet écran. Garde-les différents.</p>'
+    +'<p class="hint">De 3 à 6 chiffres. Le code de la maison ouvre l\'appli, demandé une seule fois par appareil. Le code parents protège cet écran. Garde-les différents.</p>'
     +'<div class="duo">'
-    +'<label class="fld" style="flex:0 0 150px"><span>Code de la maison</span><input class="in" inputmode="numeric" maxlength="4" data-f="appPin" value="'+esc(S.appPin)+'"></label>'
-    +'<label class="fld" style="flex:0 0 150px"><span>Code parents</span><input class="in" inputmode="numeric" maxlength="4" data-f="pin" value="'+esc(S.pin)+'"></label></div>'
+    +'<label class="fld" style="flex:0 0 150px"><span>Code de la maison</span><input class="in" inputmode="numeric" maxlength="6" data-f="appPin" value="'+esc(S.appPin)+'"></label>'
+    +'<label class="fld" style="flex:0 0 150px"><span>Code parents</span><input class="in" inputmode="numeric" maxlength="6" data-f="pin" value="'+esc(S.pin)+'"></label></div>'
     +'<button class="wide-btn" data-a="lock-now">🔒 Verrouiller cet appareil maintenant</button></div>'
-    +'<div class="sheet"><h4>Synchronisation Supabase</h4>'
-    +'<p class="hint">Colle l\'URL du projet et la clé <b>publishable</b> (sb_publishable_…), ou l\'ancienne clé anon. Jamais le mot de passe de la base ni une clé secrète. Sans ça, tout reste stocké sur cet appareil uniquement. Ces deux champs ne quittent pas ce navigateur.</p>'
-    +'<label class="fld"><span>URL du projet</span><input class="in" id="sburl" placeholder="https://xxxx.supabase.co" value="'+esc(SB.url)+'"></label>'
-    +'<label class="fld"><span>Clé publishable ou anon</span><input class="in" id="sbkey" placeholder="sb_publishable_..." value="'+esc(SB.key)+'"></label>'
+    +'<div class="sheet"><h4>Synchronisation</h4>'
+    +(SERVEUR.url&&SERVEUR.cle
+      ? '<p class="hint">✅ Le serveur est inscrit dans le fichier de l\'application : <b>tous les appareils sont synchronisés automatiquement</b>, il n\'y a rien à saisir ici. Les champs ci-dessous sont informatifs.</p>'
+      : '<p class="hint">⚠️ Aucun serveur n\'est inscrit dans le fichier. Le plus simple est de remplir les deux lignes <b>SERVEUR</b> en haut du fichier HTML : la synchronisation devient alors automatique sur tous les appareils. À défaut, renseigne-les ici, appareil par appareil.</p>')
+    +'<label class="fld"><span>Adresse du serveur</span><input class="in" id="sburl" placeholder="https://famille.xxx.workers.dev" value="'+esc(SB.url)+'"></label>'
+    +'<label class="fld"><span>Clé ou mot de passe</span><input class="in" id="sbkey" placeholder="…" value="'+esc(SB.key)+'"></label>'
+    +'<div class="fld"><span>Type de serveur</span><div class="chiprow">'
+      +[["","Détection automatique"],["worker","Cloudflare Worker"],["supabase","Supabase"]].map(o=>
+        '<button class="chip'+((SB.mode||"")===o[0]?" on":"")+'" data-a="sb-mode" data-m="'+o[0]+'" style="'+((SB.mode||"")===o[0]?"background:var(--acc)":"")+'">'+o[1]+'</button>').join("")
+    +'</div></div>'
     +'<button class="wide-btn prim" style="background:#7FA3D4" data-a="sb-save">Connecter et synchroniser</button>'
-    +'<button class="wide-btn" data-a="sb-pull">Recharger depuis Supabase</button>'
-    +'<div style="font-size:12.5px;opacity:.55;font-weight:600;margin-top:10px;line-height:1.5">État : '+(sbOn()?"connecté ☁️":"local seulement 📱")+'</div></div>'
+    +'<button class="wide-btn" data-a="sb-pull">Recharger depuis le serveur</button>'
+    +'<button class="wide-btn" data-a="diag">🔎 Tester la connexion</button>'
+    +'<div style="font-size:12.5px;opacity:.55;font-weight:600;margin-top:10px;line-height:1.5">État : '
+      +(!sbOn() ? "local seulement 📱"
+        : syncState.ok===false ? "interrompu ⚠️ — "+esc(syncState.msg)
+        : syncState.ok===true ? "connecté ☁️ ("+sbMode()+")"
+        : "configuré, pas encore testé")+'</div></div>'
     +'<div class="sheet"><h4>Données</h4>'
+    +'<p class="hint">Version de l\'application : <b>'+VERSION+'</b><br>Si ce numéro ne correspond pas à la dernière version reçue, le fichier en ligne n\'a pas été remplacé, ou le navigateur affiche une copie mise en cache.</p>'
     +'<button class="wide-btn" data-a="export">Exporter une sauvegarde (.json)</button>'
     +'<button class="wide-btn" data-a="reset-day">Remettre la journée à zéro</button>'
     +'<button class="wide-btn danger" data-a="reset-all">Tout effacer et repartir des routines d\'origine</button></div>';
@@ -1133,6 +1367,28 @@ function modalHTML(){
       +'<div class="big">'+m.medal.icon+'</div><h3 style="color:'+T2.deep+'">Nouvelle médaille !</h3>'
       +'<p><b>'+m.medal.label+'</b><br>'+m.medal.desc+'</p>'
       +'<button class="cta" style="background:'+T2.acc+'" data-a="close">Super !</button></div></div>';
+  }
+  if(m.kind==="diag"){
+    const ic={"✓":"#2E8B67","✗":"#C0505F","!":"#9A6A16","→":"#3D5578","i":"#6B7590","…":"#6B7590"};
+    return '<div class="veil" data-a="close-veil"><div class="modal left">'
+      +'<h3 style="text-align:center">🔎 Test de connexion</h3>'
+      +'<div style="margin:16px 0 4px">'+m.lines.map(l=>
+        '<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid rgba(52,64,92,.07)">'
+        +'<b style="color:'+(ic[l[0]]||"#6B7590")+';flex:0 0 18px">'+l[0]+'</b>'
+        +'<span style="font-size:14px;font-weight:600;line-height:1.4">'+esc(l[1])+'</span></div>').join("")+'</div>'
+      +(m.done?'':'<p style="font-size:13px;opacity:.5">Test en cours…</p>')
+      +'<button class="cta" style="background:#7FA3D4" data-a="close">Fermer</button></div></div>';
+  }
+  if(m.kind==="rappel"){
+    const c=childById(m.childId), T2=th(c), big=c.style==="petit";
+    return '<div class="veil" data-a="close-veil"><div class="modal">'
+      +'<div class="big">🔔</div>'
+      +'<h3 style="color:'+T2.deep+'">'+(big?"N\'oublie pas !":"À ne pas oublier aujourd'hui")+'</h3>'
+      +'<div style="margin:14px 0 4px">'+m.list.map(r=>
+        '<div style="background:'+T2.tint+';border-radius:20px;padding:16px;margin-bottom:10px;'
+        +'font-size:'+(big?22:18)+'px;font-weight:700;line-height:1.3">'+esc(r.label)+'</div>').join("")+'</div>'
+      +'<p style="font-size:14px">C\'est la première étape de ta routine.</p>'
+      +'<button class="cta" style="background:'+T2.acc+'" data-a="close">'+(big?"D'accord ! 👍":"Compris")+'</button></div></div>';
   }
   if(m.kind==="todo"){
     const owner=m.ownerId||S.parents[0].id, T2=th(parentById(owner));
@@ -1174,6 +1430,25 @@ function modalHTML(){
 /* ================================================================
    10. RENDU GLOBAL
    ================================================================ */
+let needRender=false;
+
+// Redessine l'écran, sauf si un champ est en cours de saisie : on attend
+// alors que la personne en sorte, pour ne pas lui couper la frappe.
+function softRender(){
+  const a=document.activeElement;
+  if(a && (a.tagName==="INPUT"||a.tagName==="TEXTAREA"||a.tagName==="SELECT")){ needRender=true; return; }
+  render();
+}
+document.addEventListener("focusout",()=>{
+  if(!needRender) return;
+  needRender=false;
+  setTimeout(()=>{
+    const a=document.activeElement;
+    if(!(a && (a.tagName==="INPUT"||a.tagName==="TEXTAREA"||a.tagName==="SELECT"))) render();
+    else needRender=true;
+  },120);
+});
+
 function render(){
   const c = ui.screen==="adult" ? parentById(ui.pid) : (ui.kid?childById(ui.kid):null);
   const T2 = th(c);
@@ -1201,17 +1476,99 @@ function syncTodo(){
   if(d) ui.modal.due=d.value;
 }
 
+/* --- diagnostic de synchronisation, en français clair --- */
+async function runDiag(){
+  const L=[];
+  const push=(s,t)=>{ L.push([s,t]); ui.modal={kind:"diag",lines:L.slice(),done:false}; render(); };
+  ui.modal={kind:"diag",lines:[["…","Test en cours…"]],done:false}; render();
+  L.length=0;
+
+  if(!SB.url || !SB.key){
+    push("✗","Cet appareil n'a aucune adresse de serveur enregistrée.");
+    push("→","Remplis les deux champs ci-dessus, puis « Connecter ».");
+    ui.modal.done=true; render(); return;
+  }
+  push("✓","Configuration présente ("+sbMode()+").");
+
+  const worker = sbMode()==="worker";
+  let row=null, lu=false;
+  try{
+    const u = worker ? sbBase() : sbBase()+"/rest/v1/famille?id=eq.main&select=data,rev";
+    const r = await fetch(u,{headers:sbHead()});
+    if(r.ok){
+      const j = await r.json();
+      row = worker ? ((j&&j.data)?{data:j.data,rev:j.rev||0}:null) : (j[0]||null);
+      lu = true;
+      push("✓","Lecture : le serveur répond.");
+    } else push("✗","Lecture refusée — "+httpMsg(r.status)+" (code "+r.status+").");
+  }catch(e){
+    push("✗","Serveur injoignable. Projet en pause, adresse erronée, ou pas de connexion.");
+  }
+
+  if(lu){
+    if(!row) push("!","Le serveur est vide. Le premier enregistrement le remplira.");
+    else{
+      const d = row.rev ? new Date(row.rev) : null;
+      push("✓","Dernière écriture reçue : "+(d?d.toLocaleString("fr-FR"):"date inconnue")+".");
+      const n = (row.data && row.data.tx) ? row.data.tx.length : 0;
+      push("✓",n+" mouvement"+(n>1?"s":"")+" de points sur le serveur.");
+    }
+    try{
+      const body = worker
+        ? {rev:(row&&row.rev)||Date.now(), data:(row&&row.data)||S}
+        : {id:"main", data:(row&&row.data)||S, rev:(row&&row.rev)||Date.now(), updated_at:nowISO()};
+      const h = worker ? sbHead() : Object.assign(sbHead(),{Prefer:"resolution=merge-duplicates,return=minimal"});
+      const u = worker ? sbBase() : sbBase()+"/rest/v1/famille?on_conflict=id";
+      const r2 = await fetch(u,{method:"POST",headers:h,body:JSON.stringify(body)});
+      if(r2.ok) push("✓","Écriture : autorisée.");
+      else push("✗","Écriture refusée — "+httpMsg(r2.status)+" (code "+r2.status+").");
+    }catch(e){ push("✗","Écriture impossible : serveur injoignable."); }
+  }
+
+  const n=(S.tx||[]).length;
+  push("i",n+" mouvement"+(n>1?"s":"")+" de points sur cet appareil.");
+  ui.modal.done=true; render();
+}
+
+// Bandeau rouge dès que la synchronisation ne fonctionne pas.
+function syncBanner(){
+  if(sbOn() && syncState.ok!==false) return "";
+  const m = !sbOn()
+    ? "Cet appareil enregistre en local uniquement. Rien n'est partagé avec les autres."
+    : "Synchronisation interrompue"+(syncState.msg?" — "+esc(syncState.msg):"")+". Les coches restent sur cet appareil.";
+  return '<div class="card" style="background:#FBEEF0">'
+    +'<div style="font-size:13.5px;font-weight:700;color:#B4404F;line-height:1.45">⚠️ '+m+'</div>'
+    +'<button class="wide-btn" data-a="diag" style="background:#fff;margin-top:10px">Diagnostiquer</button></div>';
+}
+
+// Ouvre la fenêtre des rappels importants, une fois par enfant et par moment.
+function remPopup(childId,tab){
+  if(tab!=="morning"&&tab!=="evening") return;
+  const slot=baseTab(variant(tab));
+  const l=remsFor(childId,slot).filter(r=>r.important
+    && doneList(childId,variant(tab)).indexOf("rm:"+r.id)<0);
+  const k=childId+":"+slot+":"+today();
+  if(l.length && !ui.remSeen[k]){ ui.remSeen[k]=1; ui.modal={kind:"rappel",childId,list:l}; }
+}
+
 function setPath(path,val){
-  // child.<id>.<champ...>  |  rewards.<i>.<champ>  |  settings.<champ>  |  pin
+  // child.<id>.<liste>.<index>.<champ> | child.<id>.targets|messages.<champ>
+  // child.<id>.<champ> | rewards|penalties|reminders.<index>.<champ>
+  // settings.<champ> | pin | appPin
   const p=path.split(".");
   if(p[0]==="child"){
     const c=childById(p[1]); if(!c) return;
-    if(p[2]==="morning"||p[2]==="evening"||p[2]==="chores"){ c.routines[p[2]][+p[3]][p[4]]=val; }
+    // Toute liste de routines, y compris morningWE et eveningWE
+    if(c.routines && Array.isArray(c.routines[p[2]])){
+      const item=c.routines[p[2]][+p[3]];
+      if(item) item[p[4]]=val;
+    }
     else if(p[2]==="targets"||p[2]==="messages"){ c[p[2]][p[3]]=val; }
     else c[p[2]]=val;
   } else if(p[0]==="rewards"||p[0]==="penalties"||p[0]==="reminders"){
     S[p[0]][+p[1]][p[2]]=val;
-  } else if(p[0]==="settings"){ S.settings[p[1]]=val; }
+  } else if(p[0]==="parents"){ S.parents[+p[1]][p[2]]=val; }
+  else if(p[0]==="settings"){ S.settings[p[1]]=val; }
   else S[p[0]]=val;
 }
 
@@ -1219,11 +1576,11 @@ document.addEventListener("input",e=>{
   const el=e.target.closest("[data-f]"); if(!el) return;
   let v=el.value;
   if(/\.(points|cost|amount|routineBonus)$/.test(el.dataset.f)){ v=parseInt(String(v).replace(/\D/g,""),10); if(isNaN(v))v=0; }
-  if(el.dataset.f==="pin") v=String(v).replace(/\D/g,"").slice(0,4);
+  if(el.dataset.f==="pin") v=String(v).replace(/\D/g,"").slice(0,6);
   if(el.dataset.f==="appPin"){
-    v=String(v).replace(/\D/g,"").slice(0,4);
+    v=String(v).replace(/\D/g,"").slice(0,6);
     // l'appareil qui change le code reste déverrouillé, les autres devront le ressaisir
-    if(v.length===4) local.set(UNLOCK,v);
+    if(v.length>=3) local.set(UNLOCK,v);
   }
   setPath(el.dataset.f,v);
   save();
@@ -1244,21 +1601,21 @@ document.addEventListener("click",async e=>{
   switch(a){
     case "pick":
       ui.kid=el.dataset.kid; ui.tab=new Date().getHours()<15?"morning":"evening";
-      ui.screen="child"; break;
+      ui.screen="child"; remPopup(ui.kid,ui.tab); break;
     case "home": ui.screen="home"; ui.modal=null; break;
     case "back": ui.screen=ui.kid?"child":"home"; ui.pin=""; break;
-    case "tab": ui.tab=el.dataset.tab; break;
+    case "tab": ui.tab=el.dataset.tab; remPopup(ui.kid,ui.tab); break;
     case "gate": ui.screen="gate"; ui.pin=""; ui.bad=false; break;
     case "ptab": ui.ptab=el.dataset.t; break;
     case "open-kid": ui.kid=el.dataset.kid; ui.screen="child"; ui.tab="morning"; break;
     case "close": case "close-veil": ui.modal=null; break;
 
     case "lkey": {
-      const d=el.dataset.d;
+      const d=el.dataset.d, n=(S.appPin||"2412").length;
       if(d==="c") ui.lock="";
       else if(d==="b") ui.lock=ui.lock.slice(0,-1);
-      else ui.lock=(ui.lock+d).slice(0,4);
-      if(ui.lock.length===4){
+      else ui.lock=(ui.lock+d).slice(0,n);
+      if(ui.lock.length===n){
         if(ui.lock===S.appPin){
           await local.set(UNLOCK,S.appPin);
           ui.lock=""; ui.bad=false; ui.screen="home";
@@ -1303,11 +1660,11 @@ document.addEventListener("click",async e=>{
     case "todo-clear": S.todos=S.todos.filter(x=>!(x.ownerId===el.dataset.pid && x.done)); save(); break;
 
     case "key": {
-      const d=el.dataset.d;
+      const d=el.dataset.d, n=(S.pin||"159").length;
       if(d==="c") ui.pin="";
       else if(d==="b") ui.pin=ui.pin.slice(0,-1);
-      else ui.pin=(ui.pin+d).slice(0,4);
-      if(ui.pin.length===4){
+      else ui.pin=(ui.pin+d).slice(0,n);
+      if(ui.pin.length===n){
         if(ui.pin===S.pin){ ui.screen="parent"; ui.pin=""; ui.bad=false; }
         else { ui.bad=true; ui.pin=""; setTimeout(()=>{ui.bad=false;render();},450); }
       }
@@ -1384,11 +1741,20 @@ document.addEventListener("click",async e=>{
     case "pen-del": S.penalties.splice(+el.dataset.i,1); save(); break;
 
     /* --- rappels --- */
-    case "rem-add": S.reminders.push({id:uid("rm"),label:"Nouveau rappel",time:"18:00",days:[1,2,3,4,5],who:"all",active:true}); save(); break;
+    case "rem-add": S.reminders.push({id:uid("rm"),label:"Nouveau rappel",time:"07:00",days:[1,2,3,4,5],
+      date:"",who:"all",slot:"morning",important:false,active:true}); save(); break;
     case "rem-del": S.reminders.splice(+el.dataset.i,1); save(); break;
     case "rem-day": { const r=S.reminders[+el.dataset.i], j=+el.dataset.j;
-      const k=r.days.indexOf(j); if(k>=0) r.days.splice(k,1); else r.days.push(j); save(); break; }
+      r.days=r.days||[]; const k=r.days.indexOf(j); if(k>=0) r.days.splice(k,1); else r.days.push(j); save(); break; }
     case "rem-who": S.reminders[+el.dataset.i].who=el.dataset.w; save(); break;
+    case "rem-slot": S.reminders[+el.dataset.i].slot=el.dataset.s; save(); break;
+    case "rem-imp": { const r=S.reminders[+el.dataset.i]; r.important=!r.important; save(); break; }
+    case "rem-mode": {
+      const r=S.reminders[+el.dataset.i];
+      if(el.dataset.m==="once"){ r.date=r.date||today(); }
+      else { r.date=""; if(!(r.days||[]).length) r.days=[1,2,3,4,5]; }
+      save(); break;
+    }
     case "notify": {
       if(!("Notification" in window)){ toast("Ce navigateur ne gère pas les notifications"); return; }
       const p=await Notification.requestPermission();
@@ -1397,7 +1763,21 @@ document.addEventListener("click",async e=>{
     }
 
     /* --- réglages --- */
+    case "sch-day": {
+      const d=+el.dataset.d, a=S.settings.schoolDays||(S.settings.schoolDays=[]);
+      const i=a.indexOf(d); if(i>=0) a.splice(i,1); else a.push(d);
+      save(); break;
+    }
+    case "tog-vac": S.settings.vacances=!S.settings.vacances; save(); break;
     case "tog-valid": S.settings.validateChores=!S.settings.validateChores; save(); break;
+    case "sb-mode": {
+      const u=document.getElementById("sburl"), k=document.getElementById("sbkey");
+      if(u) SB.url=u.value.trim();
+      if(k) SB.key=k.value.trim();
+      SB.mode=el.dataset.m||"";
+      await local.set(CFGKEY,JSON.stringify(SB));
+      break;
+    }
     case "sb-save": {
       SB.url=(document.getElementById("sburl").value||"").trim();
       SB.key=(document.getElementById("sbkey").value||"").trim();
@@ -1405,16 +1785,22 @@ document.addEventListener("click",async e=>{
       if(sbOn()){
         try{
           const remote=await sbLoad();
-          if(remote && confirm("Des données existent déjà sur Supabase. Les récupérer ? (Annuler = envoyer les données de cet appareil)")){
-            S=migrate(remote);
+          if(remote && confirm("Des données existent déjà sur le serveur. Les récupérer ? (Annuler = envoyer les données de cet appareil)")){
+            S=migrate(remote.data); lastRev=remote.rev; base=deep(S);
           }
-          await sbSave(S); toast("Connecté ☁️"); startPoll();
+          await sbSave(S); lastRev=S.rev; base=deep(S);
+          toast("Connecté ☁️"); startPoll();
         }catch(err){ toast("Échec : "+err.message); }
       } else toast("Champs vides : mode local");
       break;
     }
+    case "diag": await runDiag(); return;
     case "sb-pull": {
-      try{ const r=await sbLoad(); if(r){ S=migrate(r); toast("Rechargé ☁️"); } else toast("Aucune donnée distante"); }
+      try{
+        const r=await sbLoad();
+        if(r){ S=migrate(r.data); lastRev=r.rev; toast("Rechargé ☁️"); }
+        else toast("Aucune donnée distante");
+      }
       catch(err){ toast("Échec : "+err.message); }
       break;
     }
@@ -1438,6 +1824,26 @@ function migrate(raw){
   s.settings=Object.assign({},d.settings,raw&&raw.settings||{});
   s.tx=s.tx||[]; s.pending=s.pending||[]; s.awards=s.awards||[];
   s.parents=(raw&&raw.parents)||d.parents; s.todos=(raw&&raw.todos)||[];
+  s.settings.schoolDays=s.settings.schoolDays||[1,2,3,4,5];
+  // Le code parents par défaut est passé de 1234 à 159 : on bascule les
+  // installations restées sur l'ancien code d'origine.
+  if(s.pin==="1234") s.pin="159";
+  s.reminders=(s.reminders||[]).map(r=>Object.assign(
+    {date:"",slot:"morning",important:false,active:true,days:[],time:"07:00",who:"all"},r));
+  // Sauvegardes antérieures : on installe les variantes week-end si elles manquent
+  (s.children||[]).forEach(c=>{
+    // DEFAULT sert de référence : d a été fusionné avec raw et n'est plus fiable
+    const ref=DEFAULT.children.find(x=>x.id===c.id);
+    c.routines=c.routines||{};
+    ["morningWE","eveningWE"].forEach(k=>{
+      if(!Array.isArray(c.routines[k])){
+        c.routines[k] = (ref && Array.isArray(ref.routines[k]))
+          ? deep(ref.routines[k])
+          : deep(c.routines[baseTab(k)]||[]).map(t=>Object.assign({},t,{id:uid("t")}));
+      }
+    });
+    c.routines.chores=c.routines.chores||[];
+  });
   s.day=s.day||{date:today(),done:{},validated:{},awarded:{}};
   s.day.done=s.day.done||{}; s.day.validated=s.day.validated||{}; s.day.awarded=s.day.awarded||{};
   return s;
@@ -1445,13 +1851,20 @@ function migrate(raw){
 
 let pollTimer=null;
 
-// Relit Supabase et applique la version distante si elle est plus récente.
+// Relit Supabase et applique la copie distante si elle diffère de la dernière connue.
 async function pull(){
-  if(!sbOn()) return false;
+  if(!sbOn() || pushPending) return false;
   try{
-    const r=await sbLoad();
-    if(r && (r.rev||0) > (S.rev||0)){
-      const sc=ui.screen; S=migrate(r); rollover(); ui.screen=sc; render(); return true;
+    const row=await sbLoad();
+    if(!row) return false;
+    if(row.rev !== lastRev){
+      lastRev = row.rev;
+      const sc=ui.screen, k=ui.kid, p=ui.pid, t=ui.tab, pt=ui.ptab;
+      S = base ? mergeState(row.data) : migrate(row.data);
+      base = deep(S);
+      rollover();
+      ui.screen=sc; ui.kid=k; ui.pid=p; ui.tab=t; ui.ptab=pt;
+      softRender(); return true;
     }
   }catch(e){}
   return false;
@@ -1467,7 +1880,8 @@ function checkReminders(){
   if(!S.settings.notify || !("Notification" in window) || Notification.permission!=="granted") return;
   const n=new Date(), hm=pad(n.getHours())+":"+pad(n.getMinutes()), dow=n.getDay();
   S.reminders.forEach(r=>{
-    if(!r.active||r.time!==hm||r.days.indexOf(dow)<0) return;
+    if(!r.active||r.time!==hm) return;
+    if(r.date ? r.date!==today() : (r.days||[]).indexOf(dow)<0) return;
     const tag="rm-"+r.id+"-"+today()+"-"+hm;
     if(sessionStorage.getItem(tag)) return;
     try{ sessionStorage.setItem(tag,"1"); }catch(e){}
@@ -1477,14 +1891,22 @@ function checkReminders(){
 }
 
 (async function init(){
-  try{ const cfg=await local.get(CFGKEY); if(cfg) SB=Object.assign(SB,JSON.parse(cfg)); }catch(e){}
+  // Une configuration propre à l'appareil ne sert que si le fichier n'en porte
+  // pas. Dès que SERVEUR est rempli, il s'impose partout, sans réglage local.
+  if(!SERVEUR.url || !SERVEUR.cle){
+    try{ const cfg=await local.get(CFGKEY); if(cfg) SB=Object.assign(SB,JSON.parse(cfg)); }catch(e){}
+  }
   let loaded=null;
   if(sbOn()){
-    try{ loaded=await sbLoad(); }
+    try{
+      const row=await sbLoad();
+      if(row){ loaded=row.data; lastRev=row.rev; }
+    }
     catch(e){ toast("Supabase injoignable, mode local"); }
   }
   if(!loaded){ try{ const raw=await local.get(KEY); if(raw) loaded=JSON.parse(raw); }catch(e){} }
   S = migrate(loaded);
+  base = deep(S);
   if(rollover()) save();
   let unlocked=null;
   try{ unlocked = await local.get(UNLOCK); }catch(e){}
